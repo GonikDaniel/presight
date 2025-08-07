@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import type { User, FilterItem } from '../types/index.js';
+import type { User, FilterItem } from '../types';
 
 // Predefined lists for consistent data
 const NATIONALITIES = [

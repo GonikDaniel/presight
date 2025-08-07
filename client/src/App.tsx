@@ -1,9 +1,20 @@
 import { useState, useEffect } from 'react';
-import { UsersList } from './components/UsersList.js';
-import { SimpleSelect } from './components/SimpleSelect.js';
-import { usersApi } from './services/api.js';
-import { useDebounce } from './hooks/useDebounce.js';
-import type { QueryParams, FilterItem } from './types/index.js';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { VirtualizedUsersList } from './components/VirtualizedUsersList';
+import { SimpleSelect } from './components/SimpleSelect';
+import { usersApi } from './services/api';
+import { useDebounce } from './hooks/useDebounce';
+import type { QueryParams, FilterItem } from './types';
+
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 10, // 10 minutes (formerly cacheTime)
+    },
+  },
+});
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -141,33 +152,6 @@ function App() {
                   />
                 </div>
               </div>
-
-              {/* Active Filters Summary */}
-              {(filters.search || filters.nationality || filters.hobbies) && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <h3 className="text-sm font-medium text-gray-700 mb-3">Active Filters</h3>
-                  <div className="space-y-2">
-                    {filters.search && (
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Search:</span>
-                        <span className="font-medium text-gray-900">"{filters.search}"</span>
-                      </div>
-                    )}
-                    {filters.nationality && (
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Nationality:</span>
-                        <span className="font-medium text-gray-900">{filters.nationality}</span>
-                      </div>
-                    )}
-                    {filters.hobbies && (
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Hobby:</span>
-                        <span className="font-medium text-gray-900">{filters.hobbies}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
@@ -181,7 +165,7 @@ function App() {
                 </div>
               </div>
             ) : (
-              <UsersList filters={filters} />
+              <VirtualizedUsersList filters={filters} />
             )}
           </div>
         </div>
@@ -190,4 +174,12 @@ function App() {
   );
 }
 
-export default App;
+function AppWrapper() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  );
+}
+
+export default AppWrapper;

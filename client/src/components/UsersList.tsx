@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { UserCard } from './UserCard.js';
-import { usersApi } from '../services/api.js';
-import type { User, QueryParams } from '../types/index.js';
+import { UserCard } from './UserCard';
+import { usersApi } from '../services/api';
+import type { User, QueryParams } from '../types';
 
 interface UsersListProps {
   filters?: QueryParams;

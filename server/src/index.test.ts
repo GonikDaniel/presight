@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import type { UsersResponse, FiltersResponse } from './types/index.js';
+import type { UsersResponse, FiltersResponse } from './types';
 
 const BASE_URL = 'http://localhost:5001/api';
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { UsersResponse, FiltersResponse, QueryParams } from '../types/index.js';
+import type { UsersResponse, FiltersResponse, QueryParams } from '../types';
 
 const API_BASE_URL = 'http://localhost:5001/api';
 

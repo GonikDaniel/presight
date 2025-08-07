@@ -1,6 +1,6 @@
-import { Fragment, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
-import { ChevronUpDownIcon, CheckIcon } from '@heroicons/react/20/solid';
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { Fragment } from 'react';
 
 interface SelectOption {
   value: string;

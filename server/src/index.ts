@@ -2,8 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { generateMockData, getTopHobbiesAndNationalities } from './utils/mockData.js';
-import type { QueryParams, UsersResponse, FiltersResponse } from './types/index.js';
+import { generateMockData, getTopHobbiesAndNationalities } from './utils/mockData';
+import type { QueryParams, UsersResponse, FiltersResponse } from './types';
 
 const app = express();
 const server = createServer(app);
