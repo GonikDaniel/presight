@@ -2,15 +2,20 @@ import { useState, useEffect } from 'react';
 import { UsersList } from './components/UsersList.js';
 import { SimpleSelect } from './components/SimpleSelect.js';
 import { usersApi } from './services/api.js';
+import { useDebounce } from './hooks/useDebounce.js';
 import type { QueryParams, FilterItem } from './types/index.js';
 
 function App() {
+  const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<QueryParams>({});
   const [availableFilters, setAvailableFilters] = useState<{
     topHobbies: FilterItem[];
     topNationalities: FilterItem[];
   }>({ topHobbies: [], topNationalities: [] });
   const [loading, setLoading] = useState(true);
+
+  // Debounce search term to avoid excessive API calls
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   useEffect(() => {
     const loadFilters = async () => {
@@ -27,8 +32,13 @@ function App() {
     loadFilters();
   }, []);
 
+  // Update filters when debounced search term changes
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, search: debouncedSearchTerm || undefined }));
+  }, [debouncedSearchTerm]);
+
   const handleSearchChange = (search: string) => {
-    setFilters((prev) => ({ ...prev, search: search || undefined }));
+    setSearchTerm(search);
   };
 
   const handleNationalityFilter = (nationality: string) => {
@@ -89,6 +99,7 @@ function App() {
                   <input
                     type="text"
                     placeholder="Enter name to search..."
+                    value={searchTerm}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                     onChange={(e) => handleSearchChange(e.target.value)}
                   />
