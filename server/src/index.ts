@@ -3,6 +3,7 @@ import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { generateMockData, getTopHobbiesAndNationalities } from './utils/mockData';
+import streamingRoutes from './routes/streaming.js';
 import type { QueryParams, UsersResponse, FiltersResponse } from './types';
 
 const app = express();
@@ -106,6 +107,9 @@ app.get('/api/filters', (req, res) => {
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
+
+// Streaming routes
+app.use(streamingRoutes);
 
 // WebSocket connection handling
 io.on('connection', (socket) => {

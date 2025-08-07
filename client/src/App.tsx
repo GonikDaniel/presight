@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { VirtualizedUsersList } from './components/VirtualizedUsersList';
+import { TextStreamingDisplay } from './components/TextStreamingDisplay';
 import { SimpleSelect } from './components/SimpleSelect';
 import { usersApi } from './services/api';
 import { useDebounce } from './hooks/useDebounce';
@@ -19,6 +20,7 @@ const queryClient = new QueryClient({
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<QueryParams>({});
+  const [viewMode, setViewMode] = useState<'virtual' | 'text-streaming'>('virtual');
   const [availableFilters, setAvailableFilters] = useState<{
     topHobbies: FilterItem[];
     topNationalities: FilterItem[];
@@ -157,6 +159,34 @@ function App() {
 
           {/* Main Content */}
           <div className="xl:col-span-3">
+            {/* View Mode Toggle */}
+            <div className="mb-6 flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="viewMode"
+                    value="virtual"
+                    checked={viewMode === 'virtual'}
+                    onChange={(e) => setViewMode(e.target.value as any)}
+                    className="text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="ml-2 text-sm font-medium text-gray-700">User Cards</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="viewMode"
+                    value="text-streaming"
+                    checked={viewMode === 'text-streaming'}
+                    onChange={(e) => setViewMode(e.target.value as any)}
+                    className="text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="ml-2 text-sm font-medium text-gray-700">Text Streaming</span>
+                </label>
+              </div>
+            </div>
+
             {loading ? (
               <div className="text-center py-16">
                 <div className="inline-flex items-center space-x-2 text-gray-600">
@@ -164,8 +194,10 @@ function App() {
                   <span className="text-lg">Loading filters...</span>
                 </div>
               </div>
-            ) : (
+            ) : viewMode === 'virtual' ? (
               <VirtualizedUsersList filters={filters} />
+            ) : (
+              <TextStreamingDisplay speed={50} />
             )}
           </div>
         </div>
