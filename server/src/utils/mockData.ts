@@ -147,7 +147,7 @@ export function generateMockData(count: number = 1000): User[] {
 
     const user: User = {
       id: i + 1,
-      avatar: faker.image.avatar(),
+      avatar: `https://i.pravatar.cc/150?u=${firstName.toLowerCase()}.${lastName.toLowerCase()}`,
       first_name: firstName,
       last_name: lastName,
       age: Math.floor(Math.random() * 82) + 18, // 18-99 years old

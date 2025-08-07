@@ -1,7 +1,5 @@
 # Presight Frontend Exercise
 
-#### Create a react application and nodes web server for the following use cases
-
 1. Create a mock api to serve paginated list of information with filtering and search capabilities
 
    - Define a data object having the following
