@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { VirtualizedUsersList } from './components/VirtualizedUsersList';
-import { TextStreamingDisplay } from './components/TextStreamingDisplay';
-import { SimpleSelect } from './components/SimpleSelect';
-import { usersApi } from './services/api';
-import { useDebounce } from './hooks/useDebounce';
-import type { QueryParams, FilterItem } from './types';
+import { FiltersPanel } from './components/FiltersPanel';
+import { ViewModeSelector } from './components/ViewModeSelector';
+import { UserCardsView } from './components/UserCardsView';
+import { TextStreamView } from './components/TextStreamView';
+import type { QueryParams } from './types';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -18,54 +17,15 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<QueryParams>({});
   const [viewMode, setViewMode] = useState<'virtual' | 'text-streaming'>('virtual');
-  const [availableFilters, setAvailableFilters] = useState<{
-    topHobbies: FilterItem[];
-    topNationalities: FilterItem[];
-  }>({ topHobbies: [], topNationalities: [] });
-  const [loading, setLoading] = useState(true);
 
-  // Debounce search term to avoid excessive API calls
-  const debouncedSearchTerm = useDebounce(searchTerm, 300);
-
-  useEffect(() => {
-    const loadFilters = async () => {
-      try {
-        const response = await usersApi.getFilters();
-        setAvailableFilters(response);
-      } catch (error) {
-        console.error('Failed to load filters:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadFilters();
-  }, []);
-
-  // Update filters when debounced search term changes
-  useEffect(() => {
-    setFilters((prev) => ({ ...prev, search: debouncedSearchTerm || undefined }));
-  }, [debouncedSearchTerm]);
-
-  const handleSearchChange = (search: string) => {
-    setSearchTerm(search);
+  const handleFiltersChange = (newFilters: QueryParams) => {
+    setFilters(newFilters);
   };
 
-  const handleNationalityFilter = (nationality: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      nationality: nationality === 'all' ? undefined : nationality,
-    }));
-  };
-
-  const handleHobbyFilter = (hobby: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      hobbies: hobby === 'all' ? undefined : hobby,
-    }));
+  const handleViewModeChange = (mode: 'virtual' | 'text-streaming') => {
+    setViewMode(mode);
   };
 
   return (
@@ -85,119 +45,17 @@ function App() {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-          {/* Sidebar Filters */}
-          <div className="xl:col-span-1">
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sticky top-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">Filters</h2>
-                {(filters.search || filters.nationality || filters.hobbies) && (
-                  <button
-                    onClick={() => setFilters({})}
-                    className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
-                  >
-                    Clear all
-                  </button>
-                )}
-              </div>
+          <FiltersPanel filters={filters} onFiltersChange={handleFiltersChange} />
 
-              <div className="space-y-6">
-                {/* Search */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Search by Name
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Enter name to search..."
-                    value={searchTerm}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                    onChange={(e) => handleSearchChange(e.target.value)}
-                  />
-                </div>
-
-                {/* Nationality Filter */}
-                <div>
-                  <SimpleSelect
-                    options={[
-                      { value: 'all', label: 'All Nationalities' },
-                      ...availableFilters.topNationalities.map((item) => ({
-                        value: item.nationality!,
-                        label: item.nationality!,
-                        count: item.count,
-                      })),
-                    ]}
-                    value={filters.nationality || 'all'}
-                    onChange={handleNationalityFilter}
-                    placeholder="Select nationality"
-                    label="Nationality"
-                  />
-                </div>
-
-                {/* Hobbies Filter */}
-                <div>
-                  <SimpleSelect
-                    options={[
-                      { value: 'all', label: 'All Hobbies' },
-                      ...availableFilters.topHobbies.map((item) => ({
-                        value: item.hobby!,
-                        label: item.hobby!,
-                        count: item.count,
-                      })),
-                    ]}
-                    value={filters.hobbies || 'all'}
-                    onChange={handleHobbyFilter}
-                    placeholder="Select hobby"
-                    label="Top Hobbies"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Content */}
           <div className="xl:col-span-3">
-            {/* View Mode Toggle */}
-            <div className="mb-6 flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="viewMode"
-                    value="virtual"
-                    checked={viewMode === 'virtual'}
-                    onChange={(e) => setViewMode(e.target.value as any)}
-                    className="text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="ml-2 text-sm font-medium text-gray-700">User Cards</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="viewMode"
-                    value="text-streaming"
-                    checked={viewMode === 'text-streaming'}
-                    onChange={(e) => setViewMode(e.target.value as any)}
-                    className="text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="ml-2 text-sm font-medium text-gray-700">Text Streaming</span>
-                </label>
-              </div>
-            </div>
+            <ViewModeSelector viewMode={viewMode} onViewModeChange={handleViewModeChange} />
 
-            {loading ? (
-              <div className="text-center py-16">
-                <div className="inline-flex items-center space-x-2 text-gray-600">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-                  <span className="text-lg">Loading filters...</span>
-                </div>
-              </div>
-            ) : viewMode === 'virtual' ? (
-              <VirtualizedUsersList filters={filters} />
+            {viewMode === 'virtual' ? (
+              <UserCardsView filters={filters} />
             ) : (
-              <TextStreamingDisplay speed={50} />
+              <TextStreamView speed={50} />
             )}
           </div>
         </div>
