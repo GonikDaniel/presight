@@ -19,7 +19,7 @@ const generateRequestId = (): string => {
 };
 
 // Process request in web worker (simulated)
-const processRequest = async (requestId: string): Promise<string> => {
+const processRequest = async (): Promise<string> => {
   // Simulate web worker processing with 2-second timeout
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -51,7 +51,7 @@ router.post('/api/worker/submit', (req, res) => {
     requestQueue.set(requestId, queuedRequest);
 
     // Start processing the request
-    processRequest(requestId)
+    processRequest()
       .then((result) => {
         // Update request status
         const request = requestQueue.get(requestId);

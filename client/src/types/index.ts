@@ -60,3 +60,5 @@ export interface WebSocketMessage {
   error?: string;
   timestamp: number;
 }
+
+export type ViewMode = 'user-cards' | 'text-streaming' | 'worker-requests';

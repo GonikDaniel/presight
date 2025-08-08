@@ -5,7 +5,7 @@ import { ViewModeSelector } from './components/ViewModeSelector';
 import { UserCardsView } from './components/UserCardsView';
 import { TextStreamView } from './components/TextStreamView';
 import { WorkerRequestsView } from './components/WorkerRequestsView';
-import type { QueryParams } from './types';
+import type { QueryParams, ViewMode } from './types';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,21 +18,19 @@ const queryClient = new QueryClient({
 
 function App() {
   const [filters, setFilters] = useState<QueryParams>({});
-  const [viewMode, setViewMode] = useState<'virtual' | 'text-streaming' | 'worker-requests'>(
-    'virtual'
-  );
+  const [viewMode, setViewMode] = useState<ViewMode>('user-cards');
 
   const handleFiltersChange = (newFilters: QueryParams) => {
     setFilters(newFilters);
   };
 
-  const handleViewModeChange = (mode: 'virtual' | 'text-streaming' | 'worker-requests') => {
+  const handleViewModeChange = (mode: ViewMode) => {
     setViewMode(mode);
   };
 
   const renderView = useMemo(() => {
     switch (viewMode) {
-      case 'virtual':
+      case 'user-cards':
         return <UserCardsView filters={filters} />;
       case 'text-streaming':
         return <TextStreamView speed={50} />;

@@ -1,4 +1,4 @@
-import type { QueuedRequest, WorkerResponse } from '../types/index.js';
+import type { QueuedRequest, WorkerResponse } from '../types';
 
 class WorkerApi {
   private baseUrl = 'http://localhost:5001';

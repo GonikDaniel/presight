@@ -1,6 +1,8 @@
+import type { ViewMode } from '../types/index';
+
 interface ViewModeSelectorProps {
-  viewMode: 'virtual' | 'text-streaming' | 'worker-requests';
-  onViewModeChange: (mode: 'virtual' | 'text-streaming' | 'worker-requests') => void;
+  viewMode: ViewMode;
+  onViewModeChange: (mode: ViewMode) => void;
 }
 
 export function ViewModeSelector({ viewMode, onViewModeChange }: ViewModeSelectorProps) {
@@ -11,9 +13,9 @@ export function ViewModeSelector({ viewMode, onViewModeChange }: ViewModeSelecto
           <input
             type="radio"
             name="viewMode"
-            value="virtual"
-            checked={viewMode === 'virtual'}
-            onChange={(e) => onViewModeChange(e.target.value as 'virtual' | 'text-streaming')}
+            value="user-cards"
+            checked={viewMode === 'user-cards'}
+            onChange={(e) => onViewModeChange(e.target.value as ViewMode)}
             className="text-blue-600 focus:ring-blue-500"
           />
           <span className="ml-2 text-sm font-medium text-gray-700">User Cards</span>
@@ -24,7 +26,7 @@ export function ViewModeSelector({ viewMode, onViewModeChange }: ViewModeSelecto
             name="viewMode"
             value="text-streaming"
             checked={viewMode === 'text-streaming'}
-            onChange={(e) => onViewModeChange(e.target.value as 'virtual' | 'text-streaming')}
+            onChange={(e) => onViewModeChange(e.target.value as ViewMode)}
             className="text-blue-600 focus:ring-blue-500"
           />
           <span className="ml-2 text-sm font-medium text-gray-700">Text Streaming</span>
@@ -35,9 +37,7 @@ export function ViewModeSelector({ viewMode, onViewModeChange }: ViewModeSelecto
             name="viewMode"
             value="worker-requests"
             checked={viewMode === 'worker-requests'}
-            onChange={(e) =>
-              onViewModeChange(e.target.value as 'virtual' | 'text-streaming' | 'worker-requests')
-            }
+            onChange={(e) => onViewModeChange(e.target.value as ViewMode)}
             className="text-blue-600 focus:ring-blue-500"
           />
           <span className="ml-2 text-sm font-medium text-gray-700">Worker Requests</span>

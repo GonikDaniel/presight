@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { textStreamingApi } from '../services/textStreamingApi.js';
+import { textStreamingApi } from '../services/textStreamingApi';
 
 interface TextStreamingDisplayProps {
   speed?: number;

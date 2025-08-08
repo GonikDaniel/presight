@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import type { WebSocketMessage } from '../types/index.js';
+import type { WebSocketMessage } from '../types';
 
 class WebSocketService {
   private socket: Socket | null = null;
