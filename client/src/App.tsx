@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { FiltersPanel } from './components/FiltersPanel';
 import { ViewModeSelector } from './components/ViewModeSelector';
 import { UserCardsView } from './components/UserCardsView';
 import { TextStreamView } from './components/TextStreamView';
+import { WorkerRequestsView } from './components/WorkerRequestsView';
 import type { QueryParams } from './types';
 
-// Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -18,15 +18,28 @@ const queryClient = new QueryClient({
 
 function App() {
   const [filters, setFilters] = useState<QueryParams>({});
-  const [viewMode, setViewMode] = useState<'virtual' | 'text-streaming'>('virtual');
+  const [viewMode, setViewMode] = useState<'virtual' | 'text-streaming' | 'worker-requests'>(
+    'virtual'
+  );
 
   const handleFiltersChange = (newFilters: QueryParams) => {
     setFilters(newFilters);
   };
 
-  const handleViewModeChange = (mode: 'virtual' | 'text-streaming') => {
+  const handleViewModeChange = (mode: 'virtual' | 'text-streaming' | 'worker-requests') => {
     setViewMode(mode);
   };
+
+  const renderView = useMemo(() => {
+    switch (viewMode) {
+      case 'virtual':
+        return <UserCardsView filters={filters} />;
+      case 'text-streaming':
+        return <TextStreamView speed={50} />;
+      case 'worker-requests':
+        return <WorkerRequestsView requestCount={20} />;
+    }
+  }, [viewMode, filters]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -52,11 +65,7 @@ function App() {
           <div className="xl:col-span-3">
             <ViewModeSelector viewMode={viewMode} onViewModeChange={handleViewModeChange} />
 
-            {viewMode === 'virtual' ? (
-              <UserCardsView filters={filters} />
-            ) : (
-              <TextStreamView speed={50} />
-            )}
+            {renderView}
           </div>
         </div>
       </div>

@@ -165,7 +165,6 @@ export function getTopHobbiesAndNationalities(data: User[]): {
   topHobbies: FilterItem[];
   topNationalities: FilterItem[];
 } {
-  // Count hobbies
   const hobbyCounts: Record<string, number> = {};
   const nationalityCounts: Record<string, number> = {};
 

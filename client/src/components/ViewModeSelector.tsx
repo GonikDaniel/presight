@@ -1,6 +1,6 @@
 interface ViewModeSelectorProps {
-  viewMode: 'virtual' | 'text-streaming';
-  onViewModeChange: (mode: 'virtual' | 'text-streaming') => void;
+  viewMode: 'virtual' | 'text-streaming' | 'worker-requests';
+  onViewModeChange: (mode: 'virtual' | 'text-streaming' | 'worker-requests') => void;
 }
 
 export function ViewModeSelector({ viewMode, onViewModeChange }: ViewModeSelectorProps) {
@@ -28,6 +28,19 @@ export function ViewModeSelector({ viewMode, onViewModeChange }: ViewModeSelecto
             className="text-blue-600 focus:ring-blue-500"
           />
           <span className="ml-2 text-sm font-medium text-gray-700">Text Streaming</span>
+        </label>
+        <label className="flex items-center">
+          <input
+            type="radio"
+            name="viewMode"
+            value="worker-requests"
+            checked={viewMode === 'worker-requests'}
+            onChange={(e) =>
+              onViewModeChange(e.target.value as 'virtual' | 'text-streaming' | 'worker-requests')
+            }
+            className="text-blue-600 focus:ring-blue-500"
+          />
+          <span className="ml-2 text-sm font-medium text-gray-700">Worker Requests</span>
         </label>
       </div>
     </div>

@@ -39,3 +39,24 @@ export interface QueryParams {
   nationality?: string;
   hobbies?: string;
 }
+
+export interface QueuedRequest {
+  id: string;
+  status: 'pending' | 'processing' | 'completed';
+  result?: string;
+  timestamp: number;
+}
+
+export interface WorkerResponse {
+  requestId: string;
+  status: 'pending';
+  message: string;
+  timestamp: number;
+}
+
+export interface WebSocketMessage {
+  requestId: string;
+  result?: string;
+  error?: string;
+  timestamp: number;
+}

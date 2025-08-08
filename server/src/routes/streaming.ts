@@ -2,10 +2,10 @@ import { Router } from 'express';
 import { faker } from '@faker-js/faker';
 
 const router = Router();
+const DEFAULT_SIMULATED_STREAMING_DELAY = 50;
 
 // Streaming endpoint for long text content
 router.get('/api/stream-text', async (req, res) => {
-  // Set headers for streaming
   res.writeHead(200, {
     'Content-Type': 'text/plain',
     'Cache-Control': 'no-cache',
@@ -15,7 +15,6 @@ router.get('/api/stream-text', async (req, res) => {
   });
 
   try {
-    // Generate long text content (32 paragraphs)
     const longText = faker.lorem.paragraphs(32);
 
     // Stream the text character by character
@@ -25,8 +24,8 @@ router.get('/api/stream-text', async (req, res) => {
       // Send the character
       res.write(char);
 
-      // Add a small delay to simulate streaming (50ms per character)
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      // Add a small delay to simulate streaming
+      await new Promise((resolve) => setTimeout(resolve, DEFAULT_SIMULATED_STREAMING_DELAY));
 
       // Check if client disconnected
       if (res.destroyed) {
@@ -45,7 +44,7 @@ router.get('/api/stream-text', async (req, res) => {
 
 // Alternative endpoint with configurable speed
 router.get('/api/stream-text/:speed', async (req, res) => {
-  const speed = parseInt(req.params.speed) || 50; // Default 50ms per character
+  const speed = parseInt(req.params.speed) || DEFAULT_SIMULATED_STREAMING_DELAY;
 
   res.writeHead(200, {
     'Content-Type': 'text/plain',

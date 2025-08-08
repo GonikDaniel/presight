@@ -4,6 +4,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { generateMockData, getTopHobbiesAndNationalities } from './utils/mockData';
 import streamingRoutes from './routes/streaming.js';
+import workerRoutes, { setSocketIO } from './routes/worker';
 import type { QueryParams, UsersResponse, FiltersResponse } from './types';
 
 const app = express();
@@ -110,6 +111,12 @@ app.get('/api/health', (req, res) => {
 
 // Streaming routes
 app.use(streamingRoutes);
+
+// Worker routes
+app.use(workerRoutes);
+
+// Set up WebSocket for worker routes
+setSocketIO(io);
 
 // WebSocket connection handling
 io.on('connection', (socket) => {
