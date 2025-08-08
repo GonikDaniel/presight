@@ -2,103 +2,125 @@
 
 ## Overview
 
-This is the React frontend for the Presight exercise, implementing a user directory with filtering and search capabilities.
+React + TypeScript app with three views:
 
-## Features Implemented
+- User Cards (virtualized, infinite scroll)
+- Text Streaming (character-by-character streaming with stop/reset)
+- Worker Requests (submit jobs, receive results via WebSocket)
 
-### 1. User Card Component
+Backend runs on `http://localhost:5001`.
+Frontend runs on `http://localhost:3000`.
 
-- Displays user information in the specified card format:
-  ```
-  |----------------------------------|
-  | avatar      first_name+last_name |
-  |             nationality      age |
-  |                                  |
-  |             (2 hobbies) (+n)     |
-  |----------------------------------|
-  ```
-- Shows top 2 hobbies with remaining count indicator
-- Responsive design with hover effects
+## Features
 
-### 2. User List with Pagination
+### 1) User Cards
 
-- Displays users in a responsive grid layout
-- Implements "Load More" pagination (before virtual scrolling)
-- Loading states and error handling
-- Automatic data refresh when filters change
+- Virtualized grid (3 cards per row on desktop) via `@tanstack/react-virtual`
+- Infinite scrolling via `@tanstack/react-query`'s `useInfiniteQuery`
+- Debounced search, filter by nationality and hobbies
+- Lightweight `SimpleSelect` inputs
+- Tight spacing, no container border
 
-### 3. Search and Filtering
+### 2) Text Streaming
 
-- Search by first_name and last_name
-- Filter by nationality (top 20 nationalities)
-- Filter by hobbies (top 20 hobbies)
-- Clear all filters functionality
-- Real-time filter updates
+- Streams long text (faker.lorem.paragraphs(32)) one char at a time
+- Live display with auto-scroll, cursor animation and char counter
+- Controls: Start, Stop (cancels stream), Reset
+- Optional speed param: `GET /api/stream-text/:speed`
 
-### 4. API Integration
+### 3) Worker Requests
 
-- TypeScript interfaces matching backend API
-- Axios-based API service
-- Error handling and loading states
-- Proper TypeScript typing throughout
+- Submit requests that are processed asynchronously on the server
+- Server emits results via WebSocket (`socket.io`)
+- UI shows 20 items: `pending` -> `completed` with returned text
+- Clear-all and basic connection status
 
-## Project Structure
+## Tech
 
-```
-src/
-├── components/
-│   ├── UserCard.tsx       # Individual user card component
-│   └── UsersList.tsx      # User list with pagination
-├── services/
-│   └── api.ts            # API service layer
-├── types/
-│   └── index.ts          # TypeScript type definitions
-├── App.tsx               # Main application component
-├── main.tsx              # Application entry point
-└── index.css             # Global styles with Tailwind
-```
+- React 18+ + TypeScript
+- Vite
+- Tailwind CSS 3
+- @tanstack/react-query, @tanstack/react-virtual
+- axios
+- socket.io-client
 
-## Setup and Running
-
-1. Install dependencies:
-
-   ```bash
-   yarn install
-   ```
-
-2. Start the development server:
-
-   ```bash
-   yarn dev
-   ```
-
-3. The application will run on `http://localhost:3000`
-
-## Build for Production
+## Scripts
 
 ```bash
+# Dev
+yarn dev
+
+# Build
 yarn build
+
+# Preview built app
+yarn preview
+
+# Lint
+yarn lint
+yarn lint:fix
 ```
 
-## Technologies Used
+## Project Structure (client/src)
 
-- **React 19** with TypeScript
-- **Vite** for build tooling
-- **Tailwind CSS** for styling
-- **Axios** for API communication
-- **ES Modules** throughout
+```
+app entry
+- App.tsx                     # View switcher: 'user-cards' | 'text-streaming' | 'worker-requests'
+- main.tsx                    # React root
+- index.css                   # Tailwind setup + global styles
 
-## API Integration
+components
+- FiltersPanel.tsx            # Search + filters (debounced)
+- ViewModeSelector.tsx        # View radio group
+- UserCardsView.tsx           # Wrapper for virtualized list
+- TextStreamView.tsx          # Wrapper for text streaming display
+- VirtualizedUsersList.tsx    # Virtualized rows (3 cards/row) + infinite scroll
+- TextStreamingDisplay.tsx    # Streaming UI (start/stop/reset)
+- WorkerRequestsView.tsx      # Submit/display worker request statuses
+- UserCard.tsx                # Individual user card
 
-The frontend communicates with the backend API running on `http://localhost:5001`:
+services
+- api.ts                      # users/filters/http
+- textStreamingApi.ts         # fetch + ReadableStream helpers
+- workerApi.ts                # worker REST endpoints
+- websocketService.ts         # socket.io client wrapper
 
-- `GET /api/users` - Fetch paginated user list with filters
-- `GET /api/filters` - Get top hobbies and nationalities
-- `GET /api/health` - Health check endpoint
+types
+- index.ts                    # Shared app types (incl. ViewMode)
 
-## Next Steps
+hooks
+- useDebounce.ts              # Debounced value for search
+```
 
-- Implement virtual scrolling with @tanstack/react-virtual
-- Add advanced filtering UI
-- Implement streaming response display
-- Add WebSocket integration for real-time updates
+## Usage
+
+1. Install deps at repo root (monorepo):
+
+```bash
+yarn install
+```
+
+2. Run backend (in `server/`):
+
+```bash
+yarn dev
+```
+
+3. Run frontend (in `client/`):
+
+```bash
+yarn dev
+```
+
+## API (used by client)
+
+- `GET /api/users` — pagination + search + `nationality` + `hobbies`
+- `GET /api/filters` — top hobbies and nationalities
+- `GET /api/stream-text` — long text as a stream
+- `GET /api/stream-text/:speed` — adjustable streaming speed
+- Worker endpoints: `POST /api/worker/submit`, `GET /api/worker/status/:id`, `GET /api/worker/requests`, `DELETE /api/worker/clear`
+
+## Notes
+
+- `ViewMode` type is centralized: `'user-cards' | 'text-streaming' | 'worker-requests'` and reused across components.
+- Virtualization is per-row to preserve the 3-cards-per-row layout on desktop.
