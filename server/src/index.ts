@@ -3,13 +3,16 @@ import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import userRoutes from './routes/users';
+import args from 'args';
 import streamingRoutes from './routes/streaming';
 import workerRoutes, { setSocketIO } from './routes/worker';
 
 const app = express();
 const server = createServer(app);
 
-const PORT = process.env.PORT || 5001;
+args.option('port', 'The port on which the server runs', 5001);
+const flags = args.parse(process.argv);
+const PORT = Number(flags.port) || 5001;
 
 // Middleware
 app.use(cors());

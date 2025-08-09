@@ -112,44 +112,18 @@ yarn install
 2. Dev server:
 
 ```bash
-yarn dev
+yarn dev                 # default 5001
+yarn dev -- --port 5050 # custom port via CLI flags
 ```
 
 3. Build & run (production):
 
 ```bash
 yarn build
-yarn start
+yarn start               # default 5001
+yarn start -- --port 5050
 ```
+
+Port flag parsing is powered by `args` ([docs](https://github.com/leo/args#readme)).
 
 - Default port: `5001`
-
-## Testing (Jest)
-
-Scripts:
-
-```bash
-yarn test          # run all tests
-yarn test:watch    # watch mode
-yarn test:coverage # coverage
-
-# individual suites
-yarn test:health
-yarn test:users
-yarn test:streaming
-yarn test:worker
-```
-
-Test suites live in `tests/`:
-
-- `health.test.ts` — basics
-- `users.test.ts` — users + filters
-- `streaming.test.ts` — streaming headers + first chunk verification
-- `worker.test.ts` — queue submit/status/list/clear
-
-## Notes
-
-- ES Modules are enabled (`"type": "module"`). Build outputs to `dist/`.
-- Streaming endpoints are intentionally slow for demo; client tests avoid reading full streams.
-- In-memory queue is ephemeral; restart clears data.
-- CORS is enabled for the frontend dev server (`http://localhost:3000`).
