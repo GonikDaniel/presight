@@ -2,43 +2,40 @@
 
 ## Overview
 
-This is the backend server for the Presight exercise, implementing the paginated user list API with filtering and search capabilities.
+Node.js + Express + TypeScript backend providing:
 
-## Features Implemented
+- Users API with pagination, search, and filtering
+- Filters API (top hobbies, top nationalities)
+- Text streaming API (character-by-character)
+- Worker API backed by an in-memory queue with WebSocket results
 
-### 1. Mock Data Generation
+Runs on `http://localhost:5001`.
 
-- Generates 1000 user records with the following fields:
-  - `avatar`: Faker-generated avatar URL
-  - `first_name`: Random first name
-  - `last_name`: Random last name
-  - `age`: Random age (18-99)
-  - `nationality`: Random nationality from predefined list
-  - `hobbies`: 0-10 random hobbies from predefined list
+## Features
 
-### 2. API Endpoints
+### 1) Users & Filters
 
-#### `GET /api/health`
+- `GET /api/health` — health check
+- `GET /api/users` — pagination + search + `nationality` + `hobbies`
+- `GET /api/filters` — top hobbies and nationalities
 
-Health check endpoint to verify server is running.
+Response shapes:
 
-#### `GET /api/users`
-
-Paginated user list with filtering and search capabilities.
-
-**Query Parameters:**
-
-- `page` (default: 1): Page number
-- `limit` (default: 20): Items per page
-- `search`: Search in first_name and last_name
-- `nationality`: Filter by nationality
-- `hobbies`: Filter by hobbies (comma-separated)
-
-**Response:**
+- Users
 
 ```json
 {
-  "data": [...],
+  "data": [
+    {
+      "id": 1,
+      "avatar": "https://...",
+      "first_name": "John",
+      "last_name": "Doe",
+      "age": 25,
+      "nationality": "American",
+      "hobbies": ["Reading", "Gaming"]
+    }
+  ],
   "pagination": {
     "currentPage": 1,
     "totalPages": 50,
@@ -49,88 +46,110 @@ Paginated user list with filtering and search capabilities.
 }
 ```
 
-#### `GET /api/filters`
-
-Returns top 20 hobbies and nationalities for filtering.
-
-**Response:**
+- Filters
 
 ```json
 {
-  "topHobbies": [
-    { "hobby": "Reading", "count": 156 },
-    ...
-  ],
-  "topNationalities": [
-    { "nationality": "American", "count": 45 },
-    ...
-  ]
+  "topHobbies": [{ "hobby": "Reading", "count": 156 }],
+  "topNationalities": [{ "nationality": "American", "count": 45 }]
 }
 ```
 
-## Setup and Running
+### 2) Text Streaming
 
-1. Install dependencies:
+- `GET /api/stream-text` — streams `faker.lorem.paragraphs(32)` one character at a time with a small delay
+- `GET /api/stream-text/:speed` — same, with adjustable delay (ms)
 
-   ```bash
-   yarn install
-   ```
+Headers:
 
-2. Build the project (for production):
+- `Content-Type: text/plain`
+- `Connection: keep-alive`
 
-   ```bash
-   yarn build
-   ```
+### 3) Worker Queue + WebSocket
 
-3. Start the server:
+- `POST /api/worker/submit` — returns `{ requestId, status: "pending", message }`, processing starts in background
+- `GET /api/worker/status/:requestId` — returns current request status
+- `GET /api/worker/requests` — returns all in-memory queued requests
+- `DELETE /api/worker/clear` — clears queue and counters
 
-   ```bash
-   # For production:
-   yarn start
-   # For development with auto-restart:
-   yarn dev
-   ```
+Processing simulates a 2s job, then emits over WebSocket:
 
-4. Server will run on `http://localhost:5001`
+- Event: `request-completed` → `{ requestId, result, timestamp }`
+- Errors: `request-error`
 
-## Testing
+Socket.IO is initialized in the server and passed into worker routes. CORS for WS is enabled for `http://localhost:3000`.
 
-Run the test script to verify all endpoints:
+## Tech
 
-```bash
-yarn test
-```
-
-## Data Structure
-
-### User Object
-
-```json
-{
-  "id": 1,
-  "avatar": "https://...",
-  "first_name": "John",
-  "last_name": "Doe",
-  "age": 25,
-  "nationality": "American",
-  "hobbies": ["Reading", "Gaming", "Cooking"]
-}
-```
+- Express
+- TypeScript (ES Modules)
+- Socket.IO
+- @faker-js/faker
 
 ## Project Structure
 
 ```
 src/
-├── types/
-│   └── index.ts          # TypeScript type definitions
+├── index.ts               # App bootstrap, middleware, route mounting, Socket.IO setup
+├── routes/
+│   ├── users.ts           # /api/users, /api/filters, /api/health
+│   ├── streaming.ts       # /api/stream-text, /api/stream-text/:speed
+│   └── worker.ts          # /api/worker/* endpoints + setSocketIO()
 ├── utils/
-│   └── mockData.ts       # Mock data generation utilities
-├── index.ts              # Main server file
-└── index.test.ts         # API test file
+│   └── mockData.ts        # Mock data generation + top filters aggregation
+└── types/
+    └── index.ts           # Shared server-side interfaces
 ```
 
-## Next Steps
+## Setup
 
-- Frontend integration
-- Virtual scrolling implementation
-- Advanced filtering UI
+1. Install deps at repo root (monorepo):
+
+```bash
+yarn install
+```
+
+2. Dev server:
+
+```bash
+yarn dev
+```
+
+3. Build & run (production):
+
+```bash
+yarn build
+yarn start
+```
+
+- Default port: `5001`
+
+## Testing (Jest)
+
+Scripts:
+
+```bash
+yarn test          # run all tests
+yarn test:watch    # watch mode
+yarn test:coverage # coverage
+
+# individual suites
+yarn test:health
+yarn test:users
+yarn test:streaming
+yarn test:worker
+```
+
+Test suites live in `tests/`:
+
+- `health.test.ts` — basics
+- `users.test.ts` — users + filters
+- `streaming.test.ts` — streaming headers + first chunk verification
+- `worker.test.ts` — queue submit/status/list/clear
+
+## Notes
+
+- ES Modules are enabled (`"type": "module"`). Build outputs to `dist/`.
+- Streaming endpoints are intentionally slow for demo; client tests avoid reading full streams.
+- In-memory queue is ephemeral; restart clears data.
+- CORS is enabled for the frontend dev server (`http://localhost:3000`).
