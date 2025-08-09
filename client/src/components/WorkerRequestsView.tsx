@@ -7,7 +7,7 @@ interface WorkerRequestsViewProps {
   requestCount?: number;
 }
 
-export function WorkerRequestsView({ requestCount = 20 }: WorkerRequestsViewProps) {
+export default function WorkerRequestsView({ requestCount = 20 }: WorkerRequestsViewProps) {
   const [requests, setRequests] = useState<QueuedRequest[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +84,6 @@ export function WorkerRequestsView({ requestCount = 20 }: WorkerRequestsViewProp
     }
   }, [requestCount]);
 
-  // Clear all requests
   const clearRequests = useCallback(async () => {
     try {
       await workerApi.clearAllRequests();
@@ -96,7 +95,6 @@ export function WorkerRequestsView({ requestCount = 20 }: WorkerRequestsViewProp
     }
   }, []);
 
-  // Get status badge color
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':

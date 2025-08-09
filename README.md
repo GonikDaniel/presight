@@ -36,3 +36,22 @@
    - In react show 20 items that correspond to 20 requests, display `pending` for each of the requests and display corresponding result on receiving the websocket result
 
    > request --> `pending` --> socket message --> `result`
+
+---
+
+## Run with Docker (one command)
+
+From the repo root:
+
+```bash
+docker compose up --build
+```
+
+- Client: `http://localhost:3000`
+- Server: `http://localhost:5001`
+
+Custom server port:
+
+```bash
+docker compose run --service-ports server yarn dev -- --port 5050
+```

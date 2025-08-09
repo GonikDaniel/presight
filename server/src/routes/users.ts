@@ -73,7 +73,7 @@ router.get('/api/users', (req, res) => {
 });
 
 // Filters endpoint
-router.get('/api/filters', (req, res) => {
+router.get('/api/filters', (_req, res) => {
   try {
     const { topHobbies, topNationalities } = getTopHobbiesAndNationalities(mockData);
     const response: FiltersResponse = {
@@ -88,7 +88,7 @@ router.get('/api/filters', (req, res) => {
 });
 
 // Health check endpoint
-router.get('/api/health', (req, res) => {
+router.get('/api/health', (_req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 

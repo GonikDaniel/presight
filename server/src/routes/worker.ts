@@ -37,7 +37,7 @@ export const setSocketIO = (socketIO: any) => {
 };
 
 // API endpoint to submit a request
-router.post('/api/worker/submit', (req, res) => {
+router.post('/api/worker/submit', (_req, res) => {
   try {
     const requestId = generateRequestId();
 
@@ -127,7 +127,7 @@ router.get('/api/worker/status/:requestId', (req, res) => {
 });
 
 // API endpoint to get all requests
-router.get('/api/worker/requests', (req, res) => {
+router.get('/api/worker/requests', (_req, res) => {
   try {
     const requests = Array.from(requestQueue.values()).map((request) => ({
       id: request.id,
@@ -152,7 +152,7 @@ router.get('/api/worker/requests', (req, res) => {
 });
 
 // API endpoint to clear all requests
-router.delete('/api/worker/clear', (req, res) => {
+router.delete('/api/worker/clear', (_req, res) => {
   try {
     requestQueue.clear();
     requestCounter = 0;

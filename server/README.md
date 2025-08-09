@@ -124,6 +124,6 @@ yarn start               # default 5001
 yarn start -- --port 5050
 ```
 
-Port flag parsing is powered by `args` ([docs](https://github.com/leo/args#readme)).
+Port flag parsing is powered by `yargs` (`--port`) or `PORT` env var.
 
 - Default port: `5001`

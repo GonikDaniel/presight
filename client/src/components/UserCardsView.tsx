@@ -5,6 +5,6 @@ interface UserCardsViewProps {
   filters: QueryParams;
 }
 
-export function UserCardsView({ filters }: UserCardsViewProps) {
+export default function UserCardsView({ filters }: UserCardsViewProps) {
   return <VirtualizedUsersList filters={filters} />;
 }

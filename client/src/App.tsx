@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react';
+import { Suspense, lazy, useMemo, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { FiltersPanel } from './components/FiltersPanel';
 import { ViewModeSelector } from './components/ViewModeSelector';
-import { UserCardsView } from './components/UserCardsView';
-import { TextStreamView } from './components/TextStreamView';
-import { WorkerRequestsView } from './components/WorkerRequestsView';
+const UserCardsView = lazy(() => import('./components/UserCardsView'));
+const TextStreamView = lazy(() => import('./components/TextStreamView'));
+const WorkerRequestsView = lazy(() => import('./components/WorkerRequestsView'));
 import type { QueryParams, ViewMode } from './types';
 
 const queryClient = new QueryClient({
@@ -31,11 +31,23 @@ function App() {
   const renderView = useMemo(() => {
     switch (viewMode) {
       case 'user-cards':
-        return <UserCardsView filters={filters} />;
+        return (
+          <Suspense fallback={<div className="p-6 text-gray-600">Loading users…</div>}>
+            <UserCardsView filters={filters} />
+          </Suspense>
+        );
       case 'text-streaming':
-        return <TextStreamView speed={50} />;
+        return (
+          <Suspense fallback={<div className="p-6 text-gray-600">Loading stream…</div>}>
+            <TextStreamView speed={50} />
+          </Suspense>
+        );
       case 'worker-requests':
-        return <WorkerRequestsView requestCount={20} />;
+        return (
+          <Suspense fallback={<div className="p-6 text-gray-600">Loading requests…</div>}>
+            <WorkerRequestsView requestCount={20} />
+          </Suspense>
+        );
     }
   }, [viewMode, filters]);
 

@@ -11,5 +11,20 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom'],
+          vendor: [
+            '@tanstack/react-query',
+            '@tanstack/react-virtual',
+            'socket.io-client',
+            'axios',
+            '@headlessui/react',
+            '@heroicons/react',
+          ],
+        },
+      },
+    },
   },
 });

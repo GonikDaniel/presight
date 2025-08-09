@@ -82,12 +82,12 @@ class TextStreamingApi {
 
     eventSource.onerror = (error) => {
       console.error('EventSource error:', error);
+      // If the connection is closed, treat it as completion
+      if (eventSource.readyState === EventSource.CLOSED) {
+        onComplete(fullText);
+      }
       eventSource.close();
       onError?.(error);
-    };
-
-    eventSource.onclose = () => {
-      onComplete(fullText);
     };
 
     // Return cleanup function

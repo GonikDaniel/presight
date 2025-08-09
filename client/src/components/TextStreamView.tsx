@@ -4,6 +4,6 @@ interface TextStreamViewProps {
   speed?: number;
 }
 
-export function TextStreamView({ speed = 50 }: TextStreamViewProps) {
+export default function TextStreamView({ speed = 50 }: TextStreamViewProps) {
   return <TextStreamingDisplay speed={speed} />;
 }

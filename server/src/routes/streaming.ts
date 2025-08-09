@@ -5,7 +5,7 @@ const router = Router();
 const DEFAULT_SIMULATED_STREAMING_DELAY = 50;
 
 // Streaming endpoint for long text content
-router.get('/api/stream-text', async (req, res) => {
+router.get('/api/stream-text', async (_req, res) => {
   res.writeHead(200, {
     'Content-Type': 'text/plain',
     'Cache-Control': 'no-cache',
