@@ -50,8 +50,60 @@ docker compose up --build
 - Client: `http://localhost:3000`
 - Server: `http://localhost:5001`
 
-Custom server port:
+## Local development (without Docker)
+
+1. Install dependencies at the repo root (monorepo workspaces):
 
 ```bash
-docker compose run --service-ports server yarn dev -- --port 5050
+yarn install
 ```
+
+2. Start the server (default port 5001):
+
+```bash
+yarn --cwd server dev
+```
+
+- Custom port examples:
+  - Using CLI flag: `yarn --cwd server dev -- --port 5050`
+  - Using env: `PORT=5050 yarn --cwd server dev`
+
+3. Start the client (default port 3000):
+
+```bash
+yarn --cwd client dev
+```
+
+Client expects the API at `http://localhost:5001` by default.
+
+## Production builds
+
+- Server:
+
+  ```bash
+  yarn --cwd server build
+  yarn --cwd server start
+  ```
+
+- Client:
+  ```bash
+  yarn --cwd client build
+  # optional preview on a local server
+  yarn --cwd client preview
+  ```
+
+## Tests (server)
+
+```bash
+yarn --cwd server test
+# or
+yarn --cwd server test:users
+yarn --cwd server test:worker
+```
+
+## Useful URLs
+
+- Health: `http://localhost:5001/api/health`
+- Users: `http://localhost:5001/api/users`
+- Filters: `http://localhost:5001/api/filters`
+- Text streaming: `http://localhost:5001/api/stream-text`
